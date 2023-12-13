@@ -155,12 +155,12 @@ const DashBoard = () => {
               All payments made to the above account number will automatically
               fund your wallet
             </p>
-            <button
+            {/* <button
               onClick={pay_with_card}
               className="btn btn-block btn-hipster "
             >
               Pay with ATM card instead
-            </button>
+            </button> */}
           </div>
         </div>
 
