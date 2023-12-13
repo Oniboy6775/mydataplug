@@ -18,15 +18,15 @@ html {
 :root {
   --nav-max-height: 5rem;
   /* colors */
-  --primary-100: #d5cfe0;
-  --primary-200: #ab9fc1;
-  --primary-300: #8270a3;
-  --primary-400: #584084;
-  --primary-500: #2e1065;
-  --primary-600: #250d51;
-  --primary-700: #1c0a3d;
-  --primary-800: #120628;
-  --primary-900: #090314;
+  --primary-100: #e5e3ff;
+  --primary-200: #cbc7fe;
+  --primary-300: #b0abfe;
+  --primary-400: #968ffd;
+  --primary-500: #7c73fd;
+  --primary-600: #635cca;
+  --primary-700: #4a4598;
+  --primary-800: #322e65;
+  --primary-900: #191733;
 
   /* grey */
   --grey-50: #f8fafc;

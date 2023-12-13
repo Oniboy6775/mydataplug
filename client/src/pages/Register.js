@@ -39,16 +39,16 @@ function Register() {
   return (
     <Container>
       <Wrapper>
-        <img
-          src={logo}
-          alt="mydataplug"
-          height="50rem"
-          width="70rem"
-          className="logo"
-          onClick={() => {
-            navigate("/");
-          }}
-        />{" "}
+        <div className="rounded-full  w-[40px] absolute">
+          <img
+            src={logo}
+            alt="mydataplug"
+            className="rounded-full"
+            onClick={() => {
+              navigate("/");
+            }}
+          />
+        </div>
         <button onClick={() => navigate("/")} className="home__btn btn">
           <FaHome />
         </button>
