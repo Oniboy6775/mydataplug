@@ -15,10 +15,10 @@ const SmallNav = () => {
     { name: "price list", path: "/priceList" },
   ];
   return (
-    <Container isNavOpen={isNavOpen}>
-      <div className="my_nav__container">
-        <div className="logo">
-          <img src="./assets/logo.png" alt="" />
+    <Container className="relative" isNavOpen={isNavOpen}>
+      <div className="relative m-auto bg-white rounded w-10/12 max-w-[400px] p-4">
+        <div className="rounded-full w-[60px] h-[60px] mb-4 ">
+          <img src="./assets/logo.png" className="img  " />
         </div>
         <div
           className="absolute text-red-500 text-3xl top-4 right-8"
