@@ -27,6 +27,7 @@ function MyUsers() {
     changePage,
     adminUpgradeUser,
     isLoading,
+    user,
   } = useGlobalContext();
   const [userDetails, setUserDetails] = useState({});
 
