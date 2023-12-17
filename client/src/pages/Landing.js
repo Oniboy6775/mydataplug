@@ -18,17 +18,17 @@ const Landing = () => {
     {
       name: "airtime",
       icon: airtimeSvg,
-      desc: " Lorem ipsum dolor sit amet consectetur, adipisicing elit.              Repellendus, illum.",
+      desc: "With Our Fast And Easy Service, Your Airtime Will Be Brand New!!!",
     },
     {
       name: "data",
       icon: dataSvg,
-      desc: " Lorem ipsum dolor sit amet consectetur, adipisicing elit.              Repellendus, illum.",
+      desc: " Want To Help Your Friends And Family Connected? With Our Data Bundle Service, You Can Do Just That!!!",
     },
     {
       name: "electricity token",
       icon: electricitySvg,
-      desc: " Lorem ipsum dolor sit amet consectetur, adipisicing elit.              Repellendus, illum.",
+      desc: "With Our Easy-To-Use Service, You Can Top-Up Your Electricity Account Without The Hassle Of Going To A Store Or Waiting Inline",
     },
   ];
   const faqData = [
@@ -139,6 +139,12 @@ const Landing = () => {
     newFaq = faqData;
     setFaqs(newFaq);
   };
+  const links = [
+    { name: "home", link: "/" },
+    { name: "login", link: "/login" },
+    { name: "register", link: "/register" },
+    { name: "pricing", link: "/priceList" },
+  ];
   return (
     <div className="relative">
       <LandingNav />
@@ -211,7 +217,7 @@ const Landing = () => {
                 ) : (
                   <IoIosArrowDropdown className="text-4xl absolute top-2 right-4" />
                 )}
-                <h4 className="font-bold text-purple-500">{e.title}</h4>
+                <h4 className="font-bold text-lg text-purple-500">{e.title}</h4>
                 {e.isActive && (
                   <p className="text-center font-bold">{e.desc}</p>
                 )}
@@ -220,7 +226,57 @@ const Landing = () => {
           })}
         </div>
       </section>
-      <section className="mt-10 max-w-[var(--max-width)] w-11/12 m-auto"></section>
+      <section className="mt-10 bg-black pb-2   text-white border items-center">
+        <div className="p-4  max-w-[1300px] m-auto w-11/12">
+          <div className=" flex justify-between gap-8 md:gap-0 items-center capitalize mb-4">
+            <div className="rounded-full hidden w-48 md:block">
+              <img src="./assets/logo.png" alt="" className="img" />
+            </div>
+            <div className="">
+              <ul className="underline">
+                {links.map((e, index) => {
+                  return (
+                    <li
+                      key={index}
+                      onClick={() => navigate(e.link)}
+                      className="p-2 text-lg cursor-pointer"
+                    >
+                      {e.name}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            <div className="">
+              <div className=" ">
+                <p className="uppercase text-blue-500">Office address</p>
+                <p>No 1, Zone A, Odo - Efo Osere Ilorin</p>
+              </div>
+              <div className=" ">
+                <p className="uppercase text-blue-500">phone number</p>
+                <p>07035236371</p>
+              </div>
+              <div className=" lowercase">
+                <p className="uppercase text-blue-500">Contact us</p>
+                <p>admin@mydataplug.com.ng</p>
+                <p>horlaseriolayinka@gmail.com</p>
+              </div>
+            </div>
+          </div>
+          <p className="text-center capitalize">
+            All right reserved &copy; {new Date().getFullYear()} Designed &
+            developed by{" "}
+            <a
+              className="text-blue-500"
+              href="https://onisabi-portfolio.netlify.app/"
+              target="blank"
+            >
+              Oniboy
+            </a>
+          </p>
+        </div>
+      </section>
     </div>
   );
 };
