@@ -192,6 +192,8 @@ const reducer = (state, action) => {
       totalSales: action.payload.totalSales,
       totalProfit: action.payload.totalProfit,
       stat: action.payload.stat,
+      totalDebit: action.payload.totalDebit,
+      totalCredit: action.payload.totalCredit,
     };
   }
   if (action.type === CHANGE_PAGE) {

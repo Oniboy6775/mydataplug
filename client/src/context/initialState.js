@@ -144,4 +144,7 @@ export const initialState = {
   selectedDataType: "",
   suppliers: [],
   costPrices: [],
+  // transactions debit and credit
+  totalDebit: 0,
+  totalCredit: 0,
 };

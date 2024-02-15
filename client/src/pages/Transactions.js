@@ -6,6 +6,7 @@ import FormInput from "../components/FormInput";
 import Pagination from "../components/Pagination";
 import { MdIncompleteCircle } from "react-icons/md";
 import Stat from "../components/Stat";
+import styled from "styled-components";
 
 function Transactions() {
   const {
@@ -28,12 +29,16 @@ function Transactions() {
     totalProfit,
     selectedTransactionStatus,
     transactionStatusList,
+    totalDebit,
+    totalCredit,
   } = useGlobalContext();
   const [localSearch, setLocalSearch] = useState({
     phoneNumber: phoneNumber || "",
     userAccount: userAccount || "",
   });
   const [showStat, setShowStat] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const toggleFilter = () => setShowFilter(!showFilter);
   const handleInputChange = (e) => {
     let name = e.target.name;
     let value = e.target.value;
@@ -73,8 +78,18 @@ function Transactions() {
   return (
     <div className="sm:ml-[5rem] text-center md:ml-[4rem] bg-white p-4 rounded">
       <p className="underline title">Transactions</p>
+      <div className="bg-[var(--grey-200)] text-[var(--primary-600)] capitalize flex justify-evenly  items-center mb-2 rounded-lg px-3 font-bold">
+        <div className="">
+          <p>total credit</p>
+          <h5 className="text-green-600">₦{totalCredit.toFixed(2)}</h5>
+        </div>
+        <div className="">
+          <p>total debit</p>
+          <h5 className="text-red-600">-₦{totalDebit.toFixed(2)}</h5>
+        </div>
+      </div>
       <div className=" ">
-        <section className="card m-auto  self-start   ">
+        <SearchContainer showFilter={showFilter} className="card m-auto ">
           <div className="filter md:flex md:flex-col md:max-w-[700px] m-auto">
             <div className="md:flex ">
               <div className="flex space-x-2">
@@ -143,20 +158,29 @@ function Transactions() {
             >
               Clear filters
             </button>
-            {showStat && (
-              <div>
-                <Stat
-                  totalSales={totalSales}
-                  totalProfit={totalProfit}
-                  close={() => setShowStat(false)}
-                />
-              </div>
-            )}
           </div>
-        </section>
+        </SearchContainer>
+        {showStat && (
+          <div>
+            <Stat
+              totalSales={totalSales}
+              totalProfit={totalProfit}
+              close={() => setShowStat(false)}
+            />
+          </div>
+        )}
         <section className="">
           <div className="m-auto flex justify-center pt-4 gap-4 items-center max-w-4xl">
-            {(isAdmin || isAgent) && (
+            <button
+              className="btn btn-danger "
+              onClick={() => {
+                toggleFilter();
+                clearAllFilter();
+              }}
+            >
+              {showFilter ? "close filter" : "Search transaction"}
+            </button>
+            {isAdmin && (
               <div className="flex justify-evenly ">
                 <p className="font-bold ">
                   Total profit : ₦{totalProfit.toFixed(2) || 0}
@@ -196,3 +220,9 @@ function Transactions() {
 }
 
 export default Transactions;
+const SearchContainer = styled.section`
+  height: ${({ showFilter }) => (showFilter ? "320px" : "0px")};
+  color: ${({ showFilter }) => !showFilter && "white"};
+  overflow: hidden;
+  transition: var(--transition);
+`;

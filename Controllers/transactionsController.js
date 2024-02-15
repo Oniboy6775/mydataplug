@@ -100,6 +100,28 @@ const searchTransaction = async (req, res) => {
     }, 0);
     return result;
   };
+  const calculateMoneyFlow = (type) => {
+    let total = 0;
+    if (type === "DEBIT") {
+      const totalDebit = today.reduce((acc, cur) => {
+        if (cur.balance_After < cur.balance_Before) {
+          acc += cur.trans_amount;
+        }
+        return acc;
+      }, 0);
+      total = totalDebit;
+    }
+    if (type === "CREDIT") {
+      const totalCredit = today.reduce((acc, cur) => {
+        if (cur.balance_After > cur.balance_Before) {
+          acc += cur.trans_amount;
+        }
+        return acc;
+      }, 0);
+      total = totalCredit;
+    }
+    return total;
+  };
   let mtnSMESales = calculateStat("MTN", "SME");
   let mtnCGSales = calculateStat("MTN", "CG");
   let mtnCOUPONSales = calculateStat("MTN", "COUPON");
@@ -109,6 +131,9 @@ const searchTransaction = async (req, res) => {
   let AirtelCGSales = calculateStat("AIRTEL", "CG");
   let NmobileCGSales = calculateStat("9MOBILE", "CG");
   let NmobileSMESales = calculateStat("9MOBILE", "SME");
+  let totalDebit = calculateMoneyFlow("DEBIT");
+  let totalCredit = calculateMoneyFlow("CREDIT");
+  // console.log({ totalCredit, totalDebit });
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 20;
   const skip = (page - 1) * limit;
@@ -134,6 +159,8 @@ const searchTransaction = async (req, res) => {
     totalPages,
     totalSales,
     totalProfit,
+    totalDebit,
+    totalCredit,
   });
 };
 module.exports = searchTransaction;
