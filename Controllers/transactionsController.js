@@ -102,9 +102,10 @@ const searchTransaction = async (req, res) => {
   };
   const calculateMoneyFlow = (type) => {
     let total = 0;
+    const ADMIN = process.env.ADMIN_ID;
     if (type === "DEBIT") {
       const totalDebit = today.reduce((acc, cur) => {
-        if (cur.balance_After < cur.balance_Before) {
+        if (cur.balance_After < cur.balance_Before && cur.trans_By !== ADMIN) {
           acc += cur.trans_amount;
         }
         return acc;
@@ -113,7 +114,7 @@ const searchTransaction = async (req, res) => {
     }
     if (type === "CREDIT") {
       const totalCredit = today.reduce((acc, cur) => {
-        if (cur.balance_After > cur.balance_Before) {
+        if (cur.balance_After > cur.balance_Before && cur.trans_By !== ADMIN) {
           acc += cur.trans_amount;
         }
         return acc;
