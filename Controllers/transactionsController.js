@@ -14,30 +14,30 @@ const searchTransaction = async (req, res) => {
   }
   // type of transaction
   if (type && type !== "all") {
-    queryObject.trans_Type = type;
+    console.log({ type });
+    // queryObject.trans_Type = type;
+    queryObject.trans_Type = { $regex: type, $options: "i" };
   }
   // filter with phone number
   if (phoneNumber) {
     queryObject.phone_number = { $regex: phoneNumber, $options: "i" };
   }
-  let userId;
-  // filter with username
-  if (userName) {
-    let user = await Users.findOne({
-      userName: { $regex: userName, $options: "i" },
-    });
-    if (user) {
-      userId = user._id;
-    }
-  }
+
   // filter with transaction status
   if (status && status !== "all") {
-    queryObject.trans_Status = status;
+    queryObject.trans_Status = { $regex: status, $options: "i" };
   }
   //  filter with userId
-  if (userName && userId) {
-    queryObject.trans_By = userId;
+  // if (userName && userId) {
+  //   queryObject.trans_By = userId;
+  // }
+  if (userName) {
+    // queryObject.trans_UserName = userAccount;
+    queryObject.trans_UserName = { $regex: userName, $options: "i" };
   }
+  // if (userName) {
+  //   query.trans_By = userId;
+  // }
   if (from) {
     queryObject.createdAt = { $gte: from, $lt: to || new Date() };
   }
@@ -54,17 +54,16 @@ const searchTransaction = async (req, res) => {
 
   let start = from ? from : new Date().setHours(0, 0, 0, 0);
   let end = to ? to : new Date().setHours(23, 59, 59, 999);
+
   let query = {
     createdAt: { $gte: start, $lt: end },
   };
   if (!isAdmin && !isAgent) {
     query.trans_By = req.user.userId;
   }
-  if (userName) {
-    query.trans_By = userId;
-  }
+
   // Calculating total GB purchased
-  const today = await Transaction.find(query);
+  const today = await Transaction.find({ ...queryObject, ...query });
   const totalSales = today.reduce((acc, cur) => {
     acc += cur.trans_volume_ratio;
     return acc;
@@ -75,6 +74,7 @@ const searchTransaction = async (req, res) => {
     acc += currentProfit;
     return acc;
   }, 0);
+
   const calculateStat = (network, type) => {
     let result = {
       network: `${network} ${type}`,
@@ -124,6 +124,7 @@ const searchTransaction = async (req, res) => {
     return total;
   };
   let mtnSMESales = calculateStat("MTN", "SME");
+  let mtnSME2Sales = calculateStat("MTN", "SME2");
   let mtnCGSales = calculateStat("MTN", "CG");
   let mtnCOUPONSales = calculateStat("MTN", "COUPON");
   let gloSMESales = calculateStat("GLO", "SME");
@@ -136,32 +137,34 @@ const searchTransaction = async (req, res) => {
   let totalCredit = calculateMoneyFlow("CREDIT");
   // console.log({ totalCredit, totalDebit });
   const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 20;
+  const limit = Number(req.query.limit) || (isAdmin || isAgent ? 100 : 30);
   const skip = (page - 1) * limit;
   result = await result.skip(skip).limit(limit);
   let noOfTransaction = await Transaction.countDocuments(queryObject);
   const totalPages = Math.ceil(noOfTransaction / limit);
+  // console.log(result);
+  // console.log({ result });
   res.status(200).json({
-    stat:
-      isAdmin || isAgent
-        ? [
-            mtnSMESales,
-            mtnCGSales,
-            mtnCOUPONSales,
-            gloSMESales,
-            gloCGSales,
-            AirtelCGSales,
-            AirtelSMESales,
-            NmobileCGSales,
-            NmobileSMESales,
-          ]
-        : [],
-    transactions: result,
+    stat: isAdmin
+      ? [
+          mtnSMESales,
+          mtnSME2Sales,
+          mtnCGSales,
+          mtnCOUPONSales,
+          gloSMESales,
+          gloCGSales,
+          AirtelCGSales,
+          AirtelSMESales,
+          NmobileCGSales,
+          NmobileSMESales,
+        ]
+      : [],
     totalPages,
     totalSales,
     totalProfit,
     totalDebit,
     totalCredit,
+    transactions: result,
   });
 };
 module.exports = searchTransaction;
