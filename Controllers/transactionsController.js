@@ -105,7 +105,11 @@ const searchTransaction = async (req, res) => {
     const ADMIN = process.env.ADMIN_ID;
     if (type === "DEBIT") {
       const totalDebit = today.reduce((acc, cur) => {
-        if (cur.balance_After < cur.balance_Before && cur.trans_By !== ADMIN) {
+        if (
+          cur.balance_After < cur.balance_Before &&
+          cur.trans_By !== ADMIN &&
+          cur.trans_Status !== "refunded"
+        ) {
           acc += cur.trans_amount;
         }
         return acc;
@@ -114,7 +118,11 @@ const searchTransaction = async (req, res) => {
     }
     if (type === "CREDIT") {
       const totalCredit = today.reduce((acc, cur) => {
-        if (cur.balance_After > cur.balance_Before && cur.trans_By !== ADMIN) {
+        if (
+          cur.balance_After > cur.balance_Before &&
+          cur.trans_By !== ADMIN &&
+          cur.trans_Type !== "refund"
+        ) {
           acc += cur.trans_amount;
         }
         return acc;
