@@ -147,4 +147,7 @@ export const initialState = {
   // transactions debit and credit
   totalDebit: 0,
   totalCredit: 0,
+  // KYC DETAILS
+  bnn: "",
+  nin: "",
 };

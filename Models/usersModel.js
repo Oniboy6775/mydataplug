@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
 
   balance: { type: Number },
   apiToken: { type: String },
-    lastLogin: { type: Date },
+  lastLogin: { type: Date },
   userType: {
     type: String,
     default: "smart earner",
@@ -50,6 +50,9 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  fullName: { type: String, default: "" },
+  bvn: { type: String, default: "" },
+  nin: { type: String, default: "" },
 });
 
 userSchema.pre("save", async function () {

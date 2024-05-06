@@ -15,6 +15,7 @@ import { useGlobalContext } from "../context/UserContext";
 import WarningAlert from "../components/WarningAlert";
 import { FaWhatsapp } from "react-icons/fa";
 import { Modal } from "../components/Modal";
+import KYCModals from "../Modals/KYCModal";
 
 const DashBoard = () => {
   const { user, generateVpayAcc } = useGlobalContext();
@@ -74,36 +75,43 @@ const DashBoard = () => {
       navigate("/profile/fundWallet");
     }
   };
+  const [kycModal, setKycModal] = useState(false);
 
   return (
-    <div className=" md:ml-[6rem] bg-[var(--grey-200)] p-4">
+    <div className=" md:ml-[6rem] bg-white p-4 border-2 relative">
       {showAlert && <WarningAlert close={() => setShowAlert(false)} />}
-      {/* <div className="z-10 m-auto bg-[#25d366] max-w-[300px] rounded-lg ">
-        <p className="text-center text-small leading-none text-white">
-          <FaWhatsapp className="m-1" />
-          <a
-            href="https://whatsapp.com/channel/0029VaCiDi10VycArtEUQ12n"
-            target="blank"
-          >
-            click here{" "}
-          </a>
-          to join our whatsapp community
-        </p>
-      </div> */}
-      <p className=" text-lg font-bold text-center">
-        Welcome back, {user.userName && user.userName.substring(0, 10)}
-      </p>
-
-      <div className="flex justify-between px-4 md:pl-20 mb-2">
-        <div className="text-xl font-bold md:font-extrabold  ">
-          ₦{user.balance.toFixed(2)}
+      <div className="bg-[var(--primary-100)]  absolute top-0 left-0 right-0 px-2 ">
+        <div className="flex justify-between items-center my-4 space-x-4">
+          <div className="">
+            <p className=" text-lg font-bold text-center capitalize">
+              {user.userName && user.userName.substring(0, 15)}
+            </p>
+            <small className="font-bold">
+              {" "}
+              {user.userName && `₦${user.balance.toFixed(2)}`}
+            </small>
+          </div>
+          <div className="grid gap-1">
+            <button
+              onClick={() => (window.location.href = "#fundWallet")}
+              className="btn text-xs"
+            >
+              fund your wallet
+            </button>
+            {!user.bvn && !user.nin && (
+              <button
+                className="btn btn-danger"
+                onClick={() => setKycModal(true)}
+              >
+                update kyc
+              </button>
+            )}
+            {kycModal && <KYCModals close={() => setKycModal(!kycModal)} />}
+          </div>
         </div>
-        <a href="#fundWallet" className="btn text-xs">
-          fund your wallet
-        </a>
       </div>
       {/* navigation__section */}
-      <section className="flex flex-wrap m-auto justify-center items-stretch gap-4 cursor-pointer ">
+      <section className="flex flex-wrap m-auto mt-24 justify-center items-stretch gap-4 cursor-pointer ">
         <>
           {navigation.map((e, index) => (
             <div

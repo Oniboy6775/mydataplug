@@ -20,6 +20,7 @@ const {
   updateContact,
   deleteContact,
   updateWebhookUrl,
+  updateKyc,
   // fetchReferral,
   // withdrawEarning,
 } = require("../Controllers/userControllers");
@@ -47,5 +48,6 @@ router.post("/transferFund", auth, transferFund);
 router.post("/changePassword", auth, changePassword);
 router.get("/validateUser/:userName", auth, validateUser);
 router.post("/updateWebhook", auth, updateWebhookUrl);
+router.post("/updateKyc", auth, updateKyc);
 
 module.exports = router;

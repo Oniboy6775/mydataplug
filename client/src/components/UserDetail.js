@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import styled from "styled-components";
+import { useGlobalContext } from "../context/UserContext";
 
 const UserDetails = ({
   close,
@@ -8,12 +9,7 @@ const UserDetails = ({
   _id,
   balance,
   createdAt,
-  reservedAccountBank,
-  reservedAccountBank2,
-  reservedAccountBank3,
-  reservedAccountNo,
-  reservedAccountNo2,
-  reservedAccountNo3,
+  fullName,
   phoneNumber,
   userType,
   lastLogin,
@@ -23,7 +19,19 @@ const UserDetails = ({
   handleUpgradeUser,
   referredBy,
   accountNumbers,
+  bvn,
+  nin,
 }) => {
+  const { handleChange } = useGlobalContext();
+  const handleInputChange = (e) => {
+    let name = e.target.name;
+    let value = e.target.value;
+    handleChange({ name, value });
+  };
+  const [showModal, setShowModal] = useState(false);
+  function toggleModal() {
+    setShowModal(!showModal);
+  }
   return (
     <div className=" bg-black/50 flex m-auto h-full fixed left-0 right-0 top-0 bottom-0 z-10">
       <div
@@ -32,7 +40,8 @@ const UserDetails = ({
       >
         <h4 className="underline text-center">{userName}</h4>
         <div className="font-semibold">
-          {/* <p>Id: {_id}</p> */}
+          <p>Full name: {fullName}</p>
+          <p>Id no: {bvn || nin || ""}</p>
           <p>Balance: #{balance.toFixed(2)}</p>
           <p>phone number: {phoneNumber}</p>
           <p>Account type: {userType}</p>

@@ -12,6 +12,14 @@ function UserDetails() {
       value: user.fullName,
     },
     {
+      name: "KYC no",
+      value: user.nin
+        ? `NIN-${user.nin.substr(0, 5)}***${user.nin.substr(8, 10)}`
+        : user.bvn
+        ? `BVN-${user.bvn.substr(0, 5)}***${user.bvn.substr(8, 10)}`
+        : "not provided",
+    },
+    {
       name: "username",
       value: user.userName,
     },

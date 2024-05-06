@@ -1054,6 +1054,22 @@ export const AppProvider = ({ children }) => {
       toast.error(e.response.data.msg);
     }
   };
+  const updateKyc = async (id) => {
+    const { bvn, nin } = state;
+    try {
+      dispatch({ type: START_LOADING });
+      let payload = {};
+      if (nin) payload.nin = nin;
+      if (bvn) payload.bvn = bvn;
+      const { data } = await authFetch.post("/auth/updateKyc", payload);
+      toast(data.msg);
+      dispatch({ type: STOP_LOADING });
+      fetchTransaction();
+    } catch (e) {
+      toast.error(e.response.data.msg);
+      dispatch({ type: STOP_LOADING });
+    }
+  };
   return (
     <AppContext.Provider
       value={{
@@ -1111,6 +1127,7 @@ export const AppProvider = ({ children }) => {
         fetchReferralList,
         withdrawEarnings,
         getCostPriceAndSupplier,
+        updateKyc,
       }}
     >
       {children}

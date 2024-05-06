@@ -25,6 +25,7 @@ const { TRANSFER_RECEIPT, BONUS_RECEIPT } = require("./TransactionReceipt");
 const { MTN_CG, MTN_SME } = require("../API_DATA/newData");
 // const generateVpayAcc = require("../Utils/generateVpayAccount");
 const generateAcc = require("../Utils/accountNumbers");
+const { default: axios } = require("axios");
 
 const register = async (req, res) => {
   let { email, password, passwordCheck, userName, referredBy, phoneNumber } =
@@ -60,7 +61,7 @@ const register = async (req, res) => {
     await generateAcc({ userName, email });
     const user = await User.findOne({ email });
     const token = user.createJWT();
-        const allDataList = await Data.find();
+    const allDataList = await Data.find();
     const MTN_SME_PRICE = allDataList
       .filter((e) => e.plan_network === "MTN")
       .map((e) => {
@@ -139,7 +140,7 @@ const login = async (req, res) => {
   // generate account number
   if (user.accountNumbers.length < 1)
     await generateAcc({ userName, email: user.email });
-  
+
   const token = user.createJWT();
   const isReseller = user.userType === "reseller";
   const isApiUser = user.userType === "api user";
@@ -797,7 +798,8 @@ const deleteContact = async (req, res) => {
     console.log(error);
     res.status(500).json({ msg: "something went wrong" });
   }
-};const updateWebhookUrl = async (req, res) => {
+};
+const updateWebhookUrl = async (req, res) => {
   const { webhookUrl } = req.body;
   console.log(webhookUrl);
   const startWithHttps = webhookUrl.startsWith("https://");
@@ -808,6 +810,83 @@ const deleteContact = async (req, res) => {
     return res.status(200).json({ msg: "webhook updated successfully" });
   } catch (error) {
     return res.status(500).json({ msg: "something went wrong" });
+  }
+};
+const updateKyc = async (req, res) => {
+  const { userId } = req.user;
+  const { nin: ninNo, bvn: bvnNo } = req.body;
+  const { MONNIFY_API_URL, MONNIFY_API_ENCODED } = process.env;
+  if (!ninNo && !bvnNo) {
+    return res.status(400).json({ msg: "Please provide Bvn/Nin" });
+  }
+
+  const { userName, email, bvn, nin } = await User.findOne({ _id: userId });
+  if (bvn || nin)
+    return res.status(400).json({ msg: "You have done your KYC before" });
+  const response = await axios.post(
+    `${MONNIFY_API_URL}/api/v1/auth/login`,
+    {},
+    {
+      headers: {
+        Authorization: `Basic ${MONNIFY_API_ENCODED}`,
+      },
+    }
+  );
+  const {
+    responseBody: { accessToken },
+  } = response.data;
+  console.log({ userName });
+  const updateKYC = async (reference) => {
+    let result = {};
+    try {
+      const accountDetails = await axios.put(
+        `${MONNIFY_API_URL}/api/v1/bank-transfer/reserved-accounts/${reference}/kyc-info`,
+        { ...req.body },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      const { accountName } = accountDetails.data.responseBody;
+
+      if (accountDetails.status == 200) {
+        result.status = true;
+        result.msg = accountName;
+      }
+    } catch (error) {
+      console.log({ statusCode: error.response.status });
+      result.status = false;
+      result.msg = error.response.data.responseMessage;
+      result.statusCode = error.response.status;
+    }
+    console.log({ reference, result });
+    return result;
+  };
+  let responseObject = await updateKYC(email);
+
+  if (!responseObject.status && responseObject.statusCode != 422) {
+    console.log("first");
+    //422 means invalid id no provided
+    responseObject = await updateKYC(userName);
+  }
+  if (responseObject.status) {
+    const kycDetails = {
+      fullName: responseObject.msg,
+      bvn: bvnNo,
+      nin: ninNo,
+    };
+    // console.log("here");
+    const isUpdated = await User.updateOne(
+      { _id: userId },
+      { $set: { ...kycDetails } }
+    );
+    console.log({ isUpdated });
+    return res
+      .status(200)
+      .json({ msg: `${kycDetails.fullName} has been added as your full name` });
+  } else {
+    return res.status(500).json({ msg: responseObject.msg });
   }
 };
 module.exports = {
@@ -827,5 +906,7 @@ module.exports = {
   addContact,
   deleteContact,
   fetchContact,
-  updateContact,updateWebhookUrl
+  updateContact,
+  updateWebhookUrl,
+  updateKyc,
 };
