@@ -34,7 +34,7 @@ const buyAirtime = async (req, res) => {
       .status(400)
       .json({ msg: "Insufficient balance. Kindly fund your wallet" });
   await User.updateOne({ _id: userId }, { $inc: { balance: -amountToCharge } });
-  const { status, msg, apiResponseId } = await BUYAIRTIME({
+  const { status, msg, apiResponseId, apiResponse } = await BUYAIRTIME({
     network,
     amount,
     mobile_number,
@@ -49,7 +49,7 @@ const buyAirtime = async (req, res) => {
     const payload = {
       transactionId,
       planNetwork: NETWORK,
-      status: "processing",
+      status: "success",
       planName: amount,
       phoneNumber: mobile_number,
       amountToCharge,
@@ -58,6 +58,7 @@ const buyAirtime = async (req, res) => {
       userName: user.userName,
       type: "airtime",
       apiResponseId,
+      apiResponse,
     };
     const receipt = await generateReceipt(payload);
     res.status(200).json({ msg: msg, receipt });

@@ -28,11 +28,16 @@ const buyAirtime = async ({ network, mobile_number, amount }) => {
     );
     return {
       status: true,
-      msg: `${networkId.name} airtime purchase successful`,
+      msg: response.data.msg || `${networkId.name} airtime purchase successful`,
       apiResponseId: response.data.apiResponseId,
+      apiResponse: response.data.msg,
     };
   } catch (error) {
-    return { status: false };
+    return {
+      status: false,
+      msg: error.response.data.msg,
+      apiResponse: error.response.data?.apiResponse || "",
+    };
   }
 };
 module.exports = buyAirtime;
