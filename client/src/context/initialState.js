@@ -148,6 +148,6 @@ export const initialState = {
   totalDebit: 0,
   totalCredit: 0,
   // KYC DETAILS
-  bnn: "",
-  nin: "",
+  verificationMethod: "nin",
+  verificationNo: "",
 };

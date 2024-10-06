@@ -18,7 +18,7 @@ import { Modal } from "../components/Modal";
 import KYCModals from "../Modals/KYCModal";
 
 const DashBoard = () => {
-  const { user, generateVpayAcc } = useGlobalContext();
+  const { user, isLoading } = useGlobalContext();
   const navigate = useNavigate();
 
   const copyReferralLink = async () => {
@@ -35,14 +35,14 @@ const DashBoard = () => {
   };
 
   const [showAlert, setShowAlert] = useState(false);
-  useEffect(() => {
-    if (user.userType === "smart earner") {
-      const time = Math.random() * 7000;
-      setTimeout(() => {
-        setShowAlert(true);
-      }, [time]);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (user.userType === "smart earner") {
+  //     const time = Math.random() * 7000;
+  //     setTimeout(() => {
+  //       setShowAlert(true);
+  //     }, [time]);
+  //   }
+  // }, []);
 
   const navigation = [
     { name: "Airtime", image: airtime, link: "/profile/buyAirtime" },
@@ -65,16 +65,13 @@ const DashBoard = () => {
     // },
     // { name: "withdraw", image: withdraw, link: "/profile/withdraw" },
   ];
-  const pay_with_card = () => {
-    if (user.reservedAccountNo3) {
-      window.open(
-        `https://topup.vpay.africa/${user.reservedAccountNo3}`,
-        "blank"
-      );
+  useEffect(() => {
+    if (!isLoading && !user.nin && !user.bvn) {
+      setKycModal(true);
     } else {
-      navigate("/profile/fundWallet");
+      setKycModal(false);
     }
-  };
+  }, [isLoading, user.nin, user.bvn]);
   const [kycModal, setKycModal] = useState(false);
 
   return (

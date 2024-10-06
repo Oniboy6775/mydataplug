@@ -820,9 +820,36 @@ const updateKyc = async (req, res) => {
     return res.status(400).json({ msg: "Please provide Bvn/Nin" });
   }
 
-  const { userName, email, bvn, nin } = await User.findOne({ _id: userId });
+  const { userName, email, bvn, nin, accountNumbers } = await User.findOne({
+    _id: userId,
+  });
   if (bvn || nin)
     return res.status(400).json({ msg: "You have done your KYC before" });
+  if (accountNumbers.length < 1) {
+    const response = await generateAcc({
+      userName,
+      email,
+      bvn: bvnNo,
+      nin: ninNo,
+    });
+    // console.log(response);
+    if (!response.status) {
+      return res.status(400).json({ msg: response.msg });
+    } else {
+      const kycDetails = {
+        fullName: response.msg,
+        bvn: bvnNo,
+        nin: ninNo,
+      };
+      // console.log("here");
+      const isUpdated = await User.updateOne(
+        { _id: userId },
+        { $set: { ...kycDetails } }
+      );
+      console.log({ isUpdated });
+      return res.status(200).json({ msg: response.msg });
+    }
+  }
   const response = await axios.post(
     `${MONNIFY_API_URL}/api/v1/auth/login`,
     {},
