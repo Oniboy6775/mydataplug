@@ -19,7 +19,7 @@ import KYCModals from "../Modals/KYCModal";
 import palmpay from "../images/palmpay.png";
 
 const DashBoard = () => {
-  const { user, isLoading } = useGlobalContext();
+  const { user, isLoading, generateAccount } = useGlobalContext();
   const navigate = useNavigate();
 
   const copyReferralLink = async () => {
