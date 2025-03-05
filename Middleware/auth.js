@@ -5,7 +5,7 @@ const auth = async (req, res, next) => {
   let authHeader = req.headers.authorization;
   // console.log(req.headers);
   if (!authHeader) authHeader = req.headers["x-auth-apikey"];
-  console.log({ authHeader });
+  // console.log({ authHeader });
   let token = "";
   if (authHeader && authHeader.startsWith("Bearer ")) {
     const apiToken = authHeader.split(" ")[1];
