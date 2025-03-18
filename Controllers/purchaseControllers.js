@@ -34,7 +34,7 @@ const buyAirtime = async (req, res) => {
       .status(400)
       .json({ msg: "Insufficient balance. Kindly fund your wallet" });
   await User.updateOne({ _id: userId }, { $inc: { balance: -amountToCharge } });
-  const { status, msg, apiResponseId, apiResponse } = await BUYAIRTIME({
+  const { status, msg, apiResponseId } = await BUYAIRTIME({
     network,
     amount,
     mobile_number,
@@ -58,7 +58,6 @@ const buyAirtime = async (req, res) => {
       userName: user.userName,
       type: "airtime",
       apiResponseId,
-      apiResponse,
     };
     const receipt = await generateReceipt(payload);
     res.status(200).json({ msg: msg, receipt });
@@ -88,12 +87,20 @@ const buyData = async (req, res) => {
     return res.status(400).json({ msg: "This data is not available" });
   const {
     resellerPrice,
+    partnerPrice,
+    apiPrice,
     plan_type,
     my_price,
     plan: dataVolume,
     volumeRatio,
+    planCostPrice,
+    isAvailable,
+    plan_network,
   } = dataTobuy;
-
+  if (!isAvailable)
+    return res.status(400).json({
+      msg: `${plan_network} ${plan_type} ${dataVolume} is currently unavailable. Try other plans `,
+    });
   let amountToCharge = my_price;
   if (isReseller || isApiUser) amountToCharge = resellerPrice || my_price;
   if (balance < amountToCharge || balance - amountToCharge < 0)
@@ -130,15 +137,7 @@ const buyData = async (req, res) => {
   if (status) {
     console.log({ ...data });
     receipt = await generateReceipt({
-      // ...data,
-      // amountToCharge,
-      // userId,
-      // mobile_number,
-      // balance,
-      // userName: user.userName,
-      // type: "data",
-      // costPrice,
-      transactionId: uuid(),
+      transactionId: transactionId,
       planNetwork: NETWORK,
       planName: `${plan_type} ${dataVolume}`,
       phoneNumber: mobile_number,
@@ -149,7 +148,9 @@ const buyData = async (req, res) => {
       userName: user.userName,
       type: "data",
       volumeRatio: volumeRatio,
-      costPrice,
+      costPrice: planCostPrice || costPrice * volumeRatio || amountToCharge,
+      response: msg || "",
+      planType: plan_type,
       ...data,
     });
   }
