@@ -81,7 +81,7 @@ app.all("/api/v1/prices", async (req, res) => {
   }
 });
 
-// if (process.env.NODE_ENV !== "production") {
+// if (process.env.NODE_ENV !== "production") {//
 app.use(morgan("dev"));
 // }
 
